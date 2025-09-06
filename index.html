@@ -27,6 +27,10 @@
             --radius: 20px;
             --radius-sm: 12px;
             --transition: all 0.3s ease;
+            --stop-color: #f44336;
+            --stop-color-dark: #d32f2f;
+            --disabled-bg: #f5f5f5;
+            --disabled-text: #9e9e9e;
         }
 
         body {
@@ -152,6 +156,7 @@
             display: flex;
             position: relative;
             z-index: 10;
+            gap: 10px;
         }
 
         .input-wrapper {
@@ -170,6 +175,10 @@
             box-shadow: 0 2px 12px rgba(66, 133, 244, 0.24);
         }
 
+        .input-wrapper.disabled {
+            background: var(--disabled-bg);
+        }
+
         #user-input {
             flex: 1;
             padding: 16px 8px;
@@ -178,6 +187,15 @@
             font-size: 16px;
             background: transparent;
             color: var(--text-primary);
+        }
+
+        #user-input:disabled {
+            color: var(--disabled-text);
+            cursor: not-allowed;
+        }
+
+        #user-input::placeholder {
+            color: var(--text-secondary);
         }
 
         #send-button {
@@ -210,6 +228,32 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        #stop-button {
+            background: var(--stop-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.32);
+            display: none;
+        }
+
+        #stop-button:hover {
+            background: var(--stop-color-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+        }
+
+        #stop-button:active {
+            transform: translateY(0);
         }
 
         .typing-indicator {
@@ -269,6 +313,40 @@
             background: #f1f3f4;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-chip.disabled {
+            background: var(--disabled-bg);
+            color: var(--disabled-text);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .suggestion-chip.disabled:hover {
+            background: var(--disabled-bg);
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
         }
 
         @keyframes typing {
@@ -383,12 +461,15 @@
     </div>
     
     <div class="input-container">
-        <div class="input-wrapper">
+        <div class="input-wrapper" id="input-wrapper">
             <input type="text" id="user-input" placeholder="Tanyakan sesuatu pada Gemini..." autocomplete="off">
             <button id="send-button">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
+        <button id="stop-button">
+            <i class="fas fa-stop"></i>
+        </button>
     </div>
 
     <div class="suggestion-chips">
@@ -406,6 +487,10 @@
         </div>
     </div>
 
+    <div class="notification" id="notification">
+        Tunggu hingga respons selesai sebelum mengirim pertanyaan baru.
+    </div>
+
     <script type="module">
         // Import the necessary functions from the Google Generative AI library
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
@@ -414,13 +499,21 @@
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
+        const stopButton = document.getElementById('stop-button');
         const typingIndicator = document.getElementById('typing-indicator');
         const suggestionChips = document.querySelectorAll('.suggestion-chip');
+        const inputWrapper = document.getElementById('input-wrapper');
+        const notification = document.getElementById('notification');
         
         // Initialize the Google Generative AI
         // GANTI DENGAN API KEY ANDA
-        const API_KEY = "AIzaSyDYCN9STAsIzwyILORVCsrS1hm7_oE30gQ";
+        const API_KEY = "AIzaSyC1x0dRCmJOJVHV3C58Rq8pivJSmlxZh3c";
         const genAI = new GoogleGenerativeAI(API_KEY);
+        
+        // State management
+        let isGenerating = false;
+        let currentTypewriterEffect = null;
+        let currentAbortController = null;
         
         // Add event listeners
         sendButton.addEventListener('click', sendMessage);
@@ -429,18 +522,63 @@
                 sendMessage();
             }
         });
+        
+        // Event listener untuk tombol stop
+        stopButton.addEventListener('click', stopGeneration);
 
         // Add event listeners to suggestion chips
         suggestionChips.forEach(chip => {
             chip.addEventListener('click', () => {
+                if (isGenerating) {
+                    showNotification();
+                    return;
+                }
                 const prompt = chip.getAttribute('data-prompt');
                 userInput.value = prompt;
                 sendMessage();
             });
         });
         
+        // Function to show notification
+        function showNotification() {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Function to update UI state based on generation status
+        function updateUIState() {
+            if (isGenerating) {
+                // Disable input and suggestions
+                userInput.disabled = true;
+                userInput.placeholder = "Tunggu respons selesai...";
+                inputWrapper.classList.add('disabled');
+                
+                // Disable all suggestion chips
+                suggestionChips.forEach(chip => {
+                    chip.classList.add('disabled');
+                });
+            } else {
+                // Enable input and suggestions
+                userInput.disabled = false;
+                userInput.placeholder = "Tanyakan sesuatu pada Gemini...";
+                inputWrapper.classList.remove('disabled');
+                
+                // Enable all suggestion chips
+                suggestionChips.forEach(chip => {
+                    chip.classList.remove('disabled');
+                });
+            }
+        }
+        
         // Function to send a message
         async function sendMessage() {
+            if (isGenerating) {
+                showNotification();
+                return;
+            }
+            
             const message = userInput.value.trim();
             if (!message) return;
             
@@ -449,13 +587,26 @@
             userInput.value = '';
             sendButton.disabled = true;
             
-            // Show typing indicator
+            // Show typing indicator and stop button
             typingIndicator.style.display = 'block';
+            stopButton.style.display = 'flex';
             chatContainer.scrollTop = chatContainer.scrollHeight;
             
+            // Set state to generating
+            isGenerating = true;
+            updateUIState();
+            
             try {
+                // Create an AbortController for this request
+                currentAbortController = new AbortController();
+                
                 // Get AI response
-                const response = await getGeminiResponse(message);
+                const response = await getGeminiResponse(message, currentAbortController.signal);
+                
+                // Check if the request was aborted
+                if (currentAbortController.signal.aborted) {
+                    return;
+                }
                 
                 // Hide typing indicator
                 typingIndicator.style.display = 'none';
@@ -463,6 +614,12 @@
                 // Add AI response to chat with typewriter effect
                 addMessageWithTypeEffect(response, 'ai');
             } catch (error) {
+                // Check if the error is due to aborting
+                if (error.name === 'AbortError') {
+                    // Request was aborted, no need to show error
+                    return;
+                }
+                
                 // Hide typing indicator
                 typingIndicator.style.display = 'none';
                 
@@ -470,21 +627,72 @@
                 addMessage('Maaf, terjadi kesalahan. Silakan coba lagi.', 'ai');
                 console.error('Error:', error);
             } finally {
+                // Reset state
+                isGenerating = false;
                 sendButton.disabled = false;
+                stopButton.style.display = 'none';
+                currentAbortController = null;
+                updateUIState();
                 userInput.focus();
             }
         }
         
+        // Function to stop generation
+        function stopGeneration() {
+            if (isGenerating && currentAbortController) {
+                // Abort the current request
+                currentAbortController.abort();
+                
+                // Stop the typewriter effect if it's running
+                if (currentTypewriterEffect) {
+                    clearTimeout(currentTypewriterEffect);
+                    currentTypewriterEffect = null;
+                }
+                
+                // Hide typing indicator
+                typingIndicator.style.display = 'none';
+                
+                // Reset state
+                isGenerating = false;
+                sendButton.disabled = false;
+                stopButton.style.display = 'none';
+                updateUIState();
+                
+                // Add cancellation message
+                addMessage('Permintaan dibatalkan.', 'ai');
+            }
+        }
+        
         // Function to get response from Gemini
-        async function getGeminiResponse(prompt) {
+        async function getGeminiResponse(prompt, signal) {
             // For Gemini 1.5 Flash model
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             
             try {
-                const result = await model.generateContent(prompt);
+                // Convert the AbortSignal to a timeout-based approach since the Gemini API
+                // doesn't directly support AbortController
+                const timeoutPromise = new Promise((_, reject) => {
+                    signal.addEventListener('abort', () => {
+                        reject(new DOMException('Aborted', 'AbortError'));
+                    });
+                });
+                
+                const resultPromise = model.generateContent(prompt);
+                
+                // Race between the actual request and the abort signal
+                const result = await Promise.race([resultPromise, timeoutPromise]);
+                
+                // If we get here and the signal is aborted, throw an error
+                if (signal.aborted) {
+                    throw new DOMException('Aborted', 'AbortError');
+                }
+                
                 const response = await result.response;
                 return response.text();
             } catch (error) {
+                if (signal.aborted) {
+                    throw new DOMException('Aborted', 'AbortError');
+                }
                 console.error('Error getting response from Gemini:', error);
                 throw error;
             }
@@ -503,13 +711,7 @@
             
             const messageContent = document.createElement('div');
             messageContent.classList.add('message-content');
-            
-            // Apply different styling based on sender
-            if (sender === 'user') {
-                messageContent.textContent = text;
-            } else {
-                messageContent.textContent = text;
-            }
+            messageContent.textContent = text;
             
             messageElement.appendChild(avatar);
             messageElement.appendChild(messageContent);
@@ -568,13 +770,14 @@
                 if (i < text.length) {
                     messageContent.innerHTML = text.substring(0, i+1);
                     i++;
-                    setTimeout(typeWriter, speed);
+                    currentTypewriterEffect = setTimeout(typeWriter, speed);
                     
                     // Auto scroll as text expands
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                 } else {
                     // Remove the cursor when finished
                     messageContent.classList.remove('typewriter-text');
+                    currentTypewriterEffect = null;
                 }
             }
             
@@ -583,6 +786,7 @@
         
         // Initial focus on input
         userInput.focus();
+        updateUIState();
         
         // Add a welcome message with type effect
         setTimeout(() => {
