@@ -14,23 +14,24 @@
         }
 
         :root {
-            --primary: #4285f4;
-            --primary-dark: #3367d6;
-            --secondary: #8ab4f8;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --user-msg-bg: #e7f0ff;
-            --ai-msg-bg: #f0f4f9;
-            --text-primary: #202124;
-            --text-secondary: #5f6368;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            --primary: #8ab4f8;
+            --primary-dark: #7ba4e6;
+            --secondary: #a8c7fa;
+            --bg-color: #1e1e2e;
+            --card-bg: #2a2a3c;
+            --user-msg-bg: #2d3a5c;
+            --ai-msg-bg: #2a2a3c;
+            --text-primary: #e6e6e6;
+            --text-secondary: #a0a0a0;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
             --radius: 20px;
             --radius-sm: 12px;
             --transition: all 0.3s ease;
             --stop-color: #f44336;
             --stop-color-dark: #d32f2f;
-            --disabled-bg: #f5f5f5;
-            --disabled-text: #9e9e9e;
+            --disabled-bg: #2d2d3d;
+            --disabled-text: #6b6b6b;
+            --border-color: #3d3d5c;
         }
 
         body {
@@ -42,7 +43,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, #2b2b4a 0%, #1e1e3f 100%);
             color: white;
             padding: 18px 24px;
             text-align: center;
@@ -51,7 +52,22 @@
             z-index: 10;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-image {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
         }
 
         .header h1 {
@@ -64,6 +80,31 @@
 
         .header h1 i {
             font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .music-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(138, 180, 248, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+        }
+
+        .music-control:hover {
+            background: rgba(138, 180, 248, 0.25);
+        }
+
+        .music-control i {
+            font-size: 1.2rem;
+        }
+
+        .music-control span {
+            font-size: 0.9rem;
         }
 
         .chat-container {
@@ -74,6 +115,7 @@
             margin: 0 auto;
             width: 100%;
             scroll-behavior: smooth;
+            background-color: var(--bg-color);
         }
 
         .message {
@@ -107,12 +149,12 @@
 
         .user-avatar {
             background: var(--primary);
-            color: white;
+            color: #1e1e2e;
         }
 
         .ai-avatar {
             background: linear-gradient(135deg, #8ab4f8 0%, #668ce2 100%);
-            color: white;
+            color: #1e1e2e;
         }
 
         .message-content {
@@ -129,6 +171,7 @@
             background: var(--user-msg-bg);
             color: var(--text-primary);
             border-top-right-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
         }
 
         .ai-message .message-content {
@@ -136,6 +179,7 @@
             color: var(--text-primary);
             border-top-left-radius: var(--radius-sm);
             position: relative;
+            border: 1px solid var(--border-color);
         }
 
         .ai-message .message-content::before {
@@ -152,11 +196,12 @@
         .input-container {
             padding: 20px;
             background-color: var(--card-bg);
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
             display: flex;
             position: relative;
             z-index: 10;
             gap: 10px;
+            border-top: 1px solid var(--border-color);
         }
 
         .input-wrapper {
@@ -166,13 +211,15 @@
             align-items: center;
             background: var(--card-bg);
             border-radius: 24px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
             padding: 0 16px;
             transition: var(--transition);
+            border: 1px solid var(--border-color);
         }
 
         .input-wrapper:focus-within {
-            box-shadow: 0 2px 12px rgba(66, 133, 244, 0.24);
+            box-shadow: 0 2px 12px rgba(138, 180, 248, 0.3);
+            border-color: var(--primary);
         }
 
         .input-wrapper.disabled {
@@ -200,7 +247,7 @@
 
         #send-button {
             background: var(--primary);
-            color: white;
+            color: #1e1e2e;
             border: none;
             border-radius: 50%;
             width: 46px;
@@ -210,13 +257,13 @@
             align-items: center;
             justify-content: center;
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.32);
+            box-shadow: 0 4px 12px rgba(138, 180, 248, 0.32);
         }
 
         #send-button:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(66, 133, 244, 0.4);
+            box-shadow: 0 6px 16px rgba(138, 180, 248, 0.4);
         }
 
         #send-button:active {
@@ -224,7 +271,7 @@
         }
 
         #send-button:disabled {
-            background: #a8c7fa;
+            background: #5a7fcc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -265,6 +312,7 @@
             width: fit-content;
             box-shadow: var(--shadow);
             border-top-left-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
         }
 
         .typing-indicator span {
@@ -275,7 +323,7 @@
             background-color: var(--primary);
             display: block;
             border-radius: 50%;
-            opacity: 0.4;
+            opacity: 0.7;
         }
 
         .typing-indicator span:nth-of-type(1) {
@@ -304,15 +352,16 @@
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: var(--transition);
-            border: 1px solid #eaeaea;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
         }
 
         .suggestion-chip:hover {
-            background: #f1f3f4;
+            background: #34344a;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .suggestion-chip.disabled {
@@ -320,13 +369,13 @@
             color: var(--disabled-text);
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .suggestion-chip.disabled:hover {
             background: var(--disabled-bg);
             transform: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .notification {
@@ -334,7 +383,7 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 12px 20px;
             border-radius: 24px;
@@ -343,6 +392,7 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
+            border: 1px solid var(--border-color);
         }
 
         .notification.show {
@@ -352,7 +402,7 @@
         @keyframes typing {
             0%, 100% {
                 transform: translateY(0);
-                opacity: 0.4;
+                opacity: 0.7;
             }
             50% {
                 transform: translateY(-5px);
@@ -392,6 +442,19 @@
             .input-container {
                 padding: 16px;
             }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .profile-image {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .music-control span {
+                display: none;
+            }
         }
 
         @media (max-width: 480px) {
@@ -409,6 +472,15 @@
                 height: 34px;
                 font-size: 14px;
             }
+            
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .profile-image {
+                width: 35px;
+                height: 35px;
+            }
         }
 
         /* Efek modern untuk scrollbar */
@@ -421,12 +493,12 @@
         }
 
         .chat-container::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
+            background: #4a4a6d;
             border-radius: 4px;
         }
 
         .chat-container::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            background: #5a5a85;
         }
 
         /* Animasi typewriter untuk teks AI */
@@ -445,11 +517,74 @@
                 border-color: var(--primary);
             }
         }
+        
+        /* Gaya untuk format konten AI */
+        .ai-message .message-content h1,
+        .ai-message .message-content h2,
+        .ai-message .message-content h3 {
+            margin: 16px 0 8px 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .ai-message .message-content p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        
+        .ai-message .message-content ul, 
+        .ai-message .message-content ol {
+            margin: 8px 0 12px 20px;
+        }
+        
+        .ai-message .message-content li {
+            margin-bottom: 6px;
+        }
+        
+        .ai-message .message-content code {
+            background-color: rgba(138, 180, 248, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+        
+        .ai-message .message-content pre {
+            background-color: rgba(138, 180, 248, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+            line-height: 1.4;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .ai-message .message-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 16px;
+            margin: 12px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .ai-message .message-content strong {
+            font-weight: 600;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1><i class="fas fa-robot"></i> Gemini AI Chat</h1>
+        <div class="header-left">
+            <img src="https://files.catbox.moe/297w88.jpg" alt="Profile" class="profile-image">
+            <h1><i class="fas fa-robot"></i> Gemini AI Chat</h1>
+        </div>
+        <div class="music-control" id="music-control">
+            <i class="fas fa-play" id="music-icon"></i>
+            <span id="music-text">Putar Musik</span>
+        </div>
     </div>
     
     <div class="chat-container" id="chat-container">
@@ -491,6 +626,12 @@
         Tunggu hingga respons selesai sebelum mengirim pertanyaan baru.
     </div>
 
+    <!-- Audio element untuk musik -->
+    <audio id="background-music" loop>
+        <source src="https://files.catbox.moe/juvmq0.aac" type="audio/aac">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
     <script type="module">
         // Import the necessary functions from the Google Generative AI library
         import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
@@ -504,6 +645,10 @@
         const suggestionChips = document.querySelectorAll('.suggestion-chip');
         const inputWrapper = document.getElementById('input-wrapper');
         const notification = document.getElementById('notification');
+        const musicControl = document.getElementById('music-control');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+        const backgroundMusic = document.getElementById('background-music');
         
         // Initialize the Google Generative AI
         // GANTI DENGAN API KEY ANDA
@@ -514,6 +659,7 @@
         let isGenerating = false;
         let currentTypewriterEffect = null;
         let currentAbortController = null;
+        let isMusicPlaying = false;
         
         // Add event listeners
         sendButton.addEventListener('click', sendMessage);
@@ -538,6 +684,29 @@
                 sendMessage();
             });
         });
+        
+        // Event listener untuk kontrol musik
+        musicControl.addEventListener('click', toggleMusic);
+        
+        // Function to toggle music
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicIcon.classList.remove('fa-pause');
+                musicIcon.classList.add('fa-play');
+                musicText.textContent = 'Putar Musik';
+            } else {
+                backgroundMusic.play().catch(e => {
+                    console.log('Autoplay prevented:', e);
+                    // Jika autoplay dicegah, ubah teks untuk menunjukkan perlu interaksi manual
+                    musicText.textContent = 'Klik untuk Memutar';
+                });
+                musicIcon.classList.remove('fa-play');
+                musicIcon.classList.add('fa-pause');
+                musicText.textContent = 'Jeda Musik';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        }
         
         // Function to show notification
         function showNotification() {
@@ -711,7 +880,13 @@
             
             const messageContent = document.createElement('div');
             messageContent.classList.add('message-content');
-            messageContent.textContent = text;
+            
+            if (sender === 'ai') {
+                // Process AI text to format it properly
+                messageContent.innerHTML = formatAIResponse(text);
+            } else {
+                messageContent.textContent = text;
+            }
             
             messageElement.appendChild(avatar);
             messageElement.appendChild(messageContent);
@@ -731,6 +906,43 @@
                 messageElement.style.opacity = '1';
                 messageElement.style.transform = 'translateY(0)';
             }, 10);
+        }
+
+        // Function to format AI response with proper HTML tags
+        function formatAIResponse(text) {
+            // Replace ** with <strong> tags
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Replace * with • for lists and wrap in <ul> and <li>
+            text = text.replace(/^\s*\*\s+(.*)$/gm, '<li>$1</li>');
+            if (text.includes('<li>')) {
+                text = text.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            }
+            
+            // Replace code blocks with <pre><code>
+            text = text.replace(/```(\w+)?\s([\s\S]*?)```/g, function(match, p1, p2) {
+                return '<pre><code>' + p2.trim() + '</code></pre>';
+            });
+            
+            // Replace inline code with <code>
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Split into paragraphs where there are double line breaks
+            let paragraphs = text.split(/\n\s*\n/);
+            
+            // If we have multiple paragraphs, wrap each in <p> tags
+            if (paragraphs.length > 1) {
+                text = paragraphs.map(p => {
+                    p = p.trim();
+                    if (p.startsWith('<') || p === '') return p;
+                    return '<p>' + p + '</p>';
+                }).join('');
+            } else if (!text.includes('<') && text.trim() !== '') {
+                // Single paragraph
+                text = '<p>' + text + '</p>';
+            }
+            
+            return text;
         }
 
         // Function to add message with typewriter effect
@@ -762,13 +974,32 @@
                 messageElement.style.transform = 'translateY(0)';
             }, 10);
             
+            // Format the text first
+            const formattedText = formatAIResponse(text);
+            
             // Typewriter effect
             let i = 0;
             const speed = 20; // typing speed in milliseconds
+            let output = '';
             
             function typeWriter() {
-                if (i < text.length) {
-                    messageContent.innerHTML = text.substring(0, i+1);
+                if (i < formattedText.length) {
+                    // Handle HTML tags correctly
+                    if (formattedText[i] === '<') {
+                        // Find the complete tag
+                        const tagEnd = formattedText.indexOf('>', i);
+                        if (tagEnd !== -1) {
+                            // Insert the whole tag at once
+                            output += formattedText.substring(i, tagEnd + 1);
+                            i = tagEnd + 1;
+                            messageContent.innerHTML = output;
+                            currentTypewriterEffect = setTimeout(typeWriter, speed);
+                            return;
+                        }
+                    }
+                    
+                    output += formattedText[i];
+                    messageContent.innerHTML = output;
                     i++;
                     currentTypewriterEffect = setTimeout(typeWriter, speed);
                     
@@ -792,6 +1023,22 @@
         setTimeout(() => {
             addMessageWithTypeEffect('Halo! Saya adalah AI Gemini. Ada yang bisa saya bantu?', 'ai');
         }, 800);
+        
+        // Coba putar musik otomatis
+        window.addEventListener('load', function() {
+            backgroundMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicIcon.classList.remove('fa-play');
+                musicIcon.classList.add('fa-pause');
+                musicText.textContent = 'Jeda Musik';
+            }).catch(e => {
+                console.log('Autoplay prevented, user interaction required:', e);
+                isMusicPlaying = false;
+                musicIcon.classList.add('fa-play');
+                musicIcon.classList.remove('fa-pause');
+                musicText.textContent = 'Putar Musik';
+            });
+        });
     </script>
 </body>
 </html>
