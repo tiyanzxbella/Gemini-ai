@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Markdown Rendering</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <h1>Test Case for Markdown Rendering</h1>
+    <div id="output"></div>
+
+    <script>
+        const markdownText = `# This is a heading\n\nThis is a paragraph with **bold** and *italic* text.\n\nHere is a list:\n- Item 1\n- Item 2\n\nAnd here is a code block:\n\`\`\`python\ndef hello():\n    print("Hello, world!")\n\`\`\``;
+
+        // This is a simplified version of the logic in index.html
+        function testRender(text) {
+            const outputElement = document.getElementById('output');
+            outputElement.innerHTML = marked.parse(text);
+        }
+
+        testRender(markdownText);
+    </script>
+</body>
+</html>
